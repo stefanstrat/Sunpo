@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">sunpo</string>
+    <string name="locationNull">
+        The location was null for some reason.</string>
+    <string name="locationException">
+        There seems to be an exception with the location API.
+    </string>
+    <string name="locationUnavailable">
+        Location is unavailable.
+    </string>
+    <string name="locationPermissions">
+        Need location permission to access location.
+    </string>
+    <string name="title">
+        Getting location-data (non-updating)
+    </string>
+</resources>

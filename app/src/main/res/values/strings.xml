@@ -22,11 +22,11 @@
         Local longitude:&#160;
     </string>
 
-    <string name="sunLatitude">
+    <string name="sunAzimuth">
         The Sun\'s azimuth coordinate on the sky is:&#160;&#176;
     </string>
 
-    <string name="sunLongitude">
+    <string name="sunZenith">
         The Sun\'s zenith angle coordinate on the sky is:&#160;&#176;
     </string>
 </resources>

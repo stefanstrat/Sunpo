@@ -9,9 +9,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -21,10 +25,14 @@ import net.e175.klaus.solarpositioning.SPA;
 
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +43,16 @@ public class MainActivity extends AppCompatActivity {
         //Creates a client for the fused location provider, gets passed an activity or context
         //(a context is a "bundle" of activities and other things
         //We will use this instance to provide location information
-        FusedLocationProviderClient fusedLocationClient =
+        fusedLocationClient =
                 LocationServices.getFusedLocationProviderClient(this);
 
         //Initialising the textViews where the locations will be displayed.
         //This location is unchangeable
         final TextView latitudeTextView = findViewById(R.id.textLocalLatitude);
         final TextView longitudeTextView = findViewById(R.id.textLocalLongitude);
-        final TextView sunLatitudeTextView = findViewById(R.id.textSunAzimuth);
-        final TextView sunLongitudeTextView = findViewById(R.id.textSunZenith);
+        final TextView sunAzimuthTextView = findViewById(R.id.textSunAzimuth);
+        final TextView sunZenithTextView = findViewById(R.id.textSunZenith);
+
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
@@ -104,19 +113,37 @@ public class MainActivity extends AppCompatActivity {
                                         1010, // avg. air pressure (hPa)
                                         11); // avg. air temperature (°C)
 
-                                sunLatitudeTextView.append(String.format
+                                sunAzimuthTextView.append(String.format
                                         (Locale.ENGLISH,"%.2f", position.getAzimuth()));
-                                sunLongitudeTextView.append(String.format
+                                sunZenithTextView.append(String.format
                                         (Locale.ENGLISH, "%.2f", position.getZenithAngle()));
-
 
                             } else {
                                 //Print a message saying that the location was null
                                 latitudeTextView.setText(getText(R.string.locationNull));
+                                longitudeTextView.setText(R.string.locationNull);
+                                sunAzimuthTextView.setText(R.string.locationNull);
+                                sunZenithTextView.setText(R.string.locationNull);
                             }
                         }
                     });
 
+                //Callback to update location
+                locationCallback = new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        if (locationResult == null) {
+                            return;
+                        }
+                        for (Location location : locationResult.getLocations()) {
+                            // Update UI with location data
+                            longitudeTextView.setText(String.format
+                                    (Locale.ENGLISH, "%.5f", location.getLongitude()));
+                            latitudeTextView.setText(String.format
+                                    (Locale.ENGLISH, "%.5f", location.getLatitude()));
+                        }
+                    }
+                };
             } catch (SecurityException exception) {
                 Log.e("SecurityException", exception.toString());
             } catch (NullPointerException exception) {
@@ -128,4 +155,31 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startLocationUpdates();
+    }
+
+    private void startLocationUpdates() {
+        createLocationRequest();
+        try {
+            fusedLocationClient.requestLocationUpdates(locationRequest,
+                    locationCallback,
+                    null /* Looper */);
+        }
+        catch(SecurityException exception){
+            Log.d("SecurityException", exception.toString());
+        }
+    }
+
+    private LocationRequest locationRequest;
+    protected void createLocationRequest() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(100);
+        locationRequest.setFastestInterval(50);
+        locationRequest.setMaxWaitTime(500);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
 }

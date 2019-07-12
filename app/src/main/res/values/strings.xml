@@ -16,17 +16,17 @@
         Getting location-data (non-updating)
     </string>
     <string name="localLatitude">
-        Local latitude:
+        Local latitude:&#160;
     </string>
     <string name="localLongitude">
-        Local longitude:
+        Local longitude:&#160;
     </string>
 
     <string name="sunLatitude">
-        The Sun\'s azimuth coordinate on the sky is:
+        The Sun\'s azimuth coordinate on the sky is:&#160;&#176;
     </string>
 
     <string name="sunLongitude">
-        The Sun\'s zenith angle coordinate on the sky is:
+        The Sun\'s zenith angle coordinate on the sky is:&#160;&#176;
     </string>
 </resources>

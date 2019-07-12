@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -25,8 +24,6 @@ import net.e175.klaus.solarpositioning.SPA;
 
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -138,9 +135,13 @@ public class MainActivity extends AppCompatActivity {
                         for (Location location : locationResult.getLocations()) {
                             // Update UI with location data
                             longitudeTextView.setText(String.format
-                                    (Locale.ENGLISH, "%.5f", location.getLongitude()));
+                                    (Locale.ENGLISH, "%s%.5f",
+                                            getString(R.string.localLongitude), location.getLongitude()));
+
                             latitudeTextView.setText(String.format
-                                    (Locale.ENGLISH, "%.5f", location.getLatitude()));
+                                    (Locale.ENGLISH, "%s%.5f",
+                                            getString(R.string.localLatitude), location.getLatitude()));
+
                         }
                     }
                 };
@@ -155,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     @Override
     protected void onResume() {
         super.onResume();

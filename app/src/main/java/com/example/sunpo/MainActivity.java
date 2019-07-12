@@ -16,6 +16,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.location.LocationAvailability;
 
+import net.e175.klaus.solarpositioning.AzimuthZenithAngle;
+import net.e175.klaus.solarpositioning.DeltaT;
+import net.e175.klaus.solarpositioning.SPA;
+
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     //We will use this instance to provide location information
@@ -30,14 +37,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Creates a client for the fused location provider, gets passed an activity or context
-        //(a context is a "bundle" of activities
+        //(a context is a "bundle" of activities and other things
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         //Initialising the textView where the location will be displayed.
         //This location is unchangeable
-        final TextView textView = findViewById(R.id.LocationDisplay);
-        final TextView upperText = findViewById(R.id.upperText);
-        upperText.setText(R.string.title);
+        final TextView latitudeTextView = findViewById(R.id.textLocalLatitude);
+        final TextView longitudeTextView = findViewById(R.id.textLocalLongitude);
+        final TextView sunLatitudeTextView = findViewById(R.id.textSunLatitude);
+        final TextView sunLongitudeTextView = findViewById(R.id.textSunLongitude);
         //START OF COPIED CODE FROM ANDROID DEVELOPERS
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
@@ -50,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-                upperText.setText(R.string.locationPermissions);
             } else {
                 // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(this,
@@ -62,42 +69,54 @@ public class MainActivity extends AppCompatActivity {
                 // result of the request.
             }
         } else {
-            //THE COMMENTED OUT CODE CRASHES!!! (NullPointerException I think)
             //The following is a try/catch because the user may not supply permissions for location
             try {
-                /*//Trying to get the location availability
-                //Need to use an onSuccess listener I think
-                fusedLocationClient.getLocationAvailability()
-                        .addOnSuccessListener(new OnSuccessListener<LocationAvailability>() {
-                            @Override
-                            public void onSuccess(LocationAvailability locationAvailability) {
-                                textView.setText(getText(R.string.locationUnavailable));
-                                if(!fusedLocationClient.getLocationAvailability().
-                                        getResult().isLocationAvailable())
-                                    textView.setText(getText(R.string.locationUnavailable));
-
-                            }
-                        });
-*/
+                //Building an onSuccessListener for the getLastLocation method
                 fusedLocationClient.getLastLocation()
                         .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                             @Override
                             public void onSuccess(Location location) {
                                 // Got last known location. In some rare situations this can be null.
-                                textView.setText(getText(R.string.locationException));
+                                latitudeTextView.setText(getText(R.string.locationException));
                                 if (location != null) {
                                     // Logic to handle location object
                                     //I really just want to print it (for now)
-                                    textView.setText(location.toString());
+                                    latitudeTextView.setText(getText(R.string.localLatitude));
+                                    latitudeTextView.append(Double.toString(location.getLatitude()));
+                                    longitudeTextView.setText((getText(R.string.localLongitude)));
+                                    longitudeTextView.append(Double.toString((location.getLongitude())));
+
+                                    //And save it
+                                    double localLatitude = location.getLatitude();
+                                    double localLongitude = location.getLongitude();
+
+                                    //Now I want to use the KlausBrunner solarposition API to get
+                                    // the Sun's position
+                                    final GregorianCalendar dateTime = new GregorianCalendar();
+                                    AzimuthZenithAngle position = SPA.calculateSolarPosition(
+                                            dateTime,
+                                            localLatitude, // latitude (degrees)
+                                            localLongitude, // longitude (degrees)
+                                            190, // elevation (m)
+                                            DeltaT.estimate(dateTime), // delta T (s)
+                                            1010, // avg. air pressure (hPa)
+                                            11); // avg. air temperature (°C)
+
+                                    sunLatitudeTextView.append(String.format
+                                            (Locale.ENGLISH,"%.2f", position.getAzimuth()));
+                                    sunLongitudeTextView.append(String.format
+                                            (Locale.ENGLISH, "%.2f", position.getZenithAngle()));
+
+
                                 } else {
                                     //Print a message saying that the location was null
-                                    textView.setText(getText(R.string.locationNull));
+                                    latitudeTextView.setText(getText(R.string.locationNull));
                                 }
                             }
                         });
+
             } catch (SecurityException exception) {
                 Log.e("SecurityException", exception.toString());
-                textView.setText(getText(R.string.locationException));
             } catch (NullPointerException exception) {
                 Log.e("NullPointerException", exception.toString());
             } catch (Exception exception) {

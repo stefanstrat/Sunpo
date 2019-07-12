@@ -6,25 +6,53 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/upperText"
-        android:layout_width="155dp"
-        android:layout_height="80dp"
-        android:text="TextView"
-        android:textSize="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.464"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="114dp" />
-
-    <TextView
-        android:id="@+id/LocationDisplay"
+    <LinearLayout
         android:layout_width="361dp"
-        android:layout_height="242dp"
-        android:layout_marginBottom="8dp"
-        android:text="TextView"
+        android:layout_height="504dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.68"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
+
+        <TextView
+            android:id="@+id/textLocalLatitude"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="@string/localLatitude" />
+
+        <TextView
+            android:id="@+id/textLocalLongitude"
+            android:layout_width="match_parent"
+            android:layout_height="92dp"
+            android:text="@string/localLongitude" />
+
+        <TextView
+            android:id="@+id/textSunLatitude"
+            android:layout_width="match_parent"
+            android:layout_height="92dp"
+            android:text="@string/sunLatitude" />
+
+        <TextView
+            android:id="@+id/textSunLongitude"
+            android:layout_width="match_parent"
+            android:layout_height="92dp"
+            android:text="@string/sunLongitude" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/sunpo" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
